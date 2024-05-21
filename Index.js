@@ -37,6 +37,15 @@ async function run() {
         res.send(result)
     })
 
+    app.post("/filteredRooms", async(req,res)=>{
+      const data = req.body;
+      const {start, end} = data;
+      const rooms = roomCollection.find({pricePerNight: {$gte: start, $lte: end}});
+      const result = await rooms.toArray()
+      console.log(data);
+      res.send(result)
+    })
+
 
 
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
