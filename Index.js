@@ -42,7 +42,6 @@ async function run() {
       const {start, end} = data;
       const rooms = roomCollection.find({pricePerNight: {$gte: start, $lte: end}});
       const result = await rooms.toArray()
-      console.log(data);
       res.send(result)
     })
 
