@@ -30,12 +30,12 @@ const roomCollection = database.collection("roomCollection");
 async function run() {
   try {
     
+   
     app.get("/allRooms", async(req, res)=>{
         const cursor = roomCollection.find();
         const result = await cursor.toArray();
         res.send(result)
     })
-
 
 
 
