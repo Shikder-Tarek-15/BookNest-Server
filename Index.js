@@ -3,7 +3,7 @@ const cors = require("cors");
 const app = express();
 require('dotenv').config()
 const port = process.env.PORT || 5000;
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 //middleware
 app.use(cors());
@@ -31,10 +31,18 @@ async function run() {
   try {
     
    
-    app.get("/allRooms", async(req, res)=>{
-        const cursor = roomCollection.find();
+    app.get("/availableRooms", async(req, res)=>{
+      const query = {availability: true}
+        const cursor = roomCollection.find(query);
         const result = await cursor.toArray();
         res.send(result)
+    })
+
+    app.get("/roomDetails/:id", async(req, res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await roomCollection.findOne(query);
+      res.send(result)
     })
 
     app.post("/filteredRooms", async(req,res)=>{
@@ -44,6 +52,8 @@ async function run() {
       const result = await rooms.toArray()
       res.send(result)
     })
+
+
 
 
 
