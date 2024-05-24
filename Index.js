@@ -103,6 +103,15 @@ async function run() {
       res.send(result);
     });
 
+    app.post('/checkBooked', async(req,res)=>{
+      const {roomId} = req.body;
+      console.log(roomId);
+      const query = {roomId: roomId}
+      const result = await bookingCollection.find(query).toArray()
+      console.log("this is:" ,result)
+      res.send(result)
+    })
+
 
 
     app.post("/bookingCollection", async(req,res)=>{
