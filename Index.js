@@ -154,6 +154,33 @@ async function run() {
       res.send(result);
     });
 
+    app.patch("/updateRoomAvailability", async (req, res) => {
+      try {
+        const now = new Date();
+
+        const roomsToUpdate = await bookingCollection.find({
+          end: { $lt: now },
+        });
+
+        await Promise.all(
+          roomsToUpdate.map((room) =>
+            roomCollection.updateOne(
+              { _id: room._id },
+              { $set: { available: true } }
+            )
+          )
+        );
+
+        res
+          .status(200)
+          .json({ message: "Room availability updated successfully." });
+      } catch (error) {
+        res
+          .status(500)
+          .json({ message: "Failed to update room availability." });
+      }
+    });
+
     // delete
     app.delete("/deleteBooking/:id", async (req, res) => {
       const id = req.params.id;
