@@ -72,6 +72,12 @@ async function run() {
         .send({ success: true });
     });
 
+    app.get("/rooms", async (req, res) => {
+      const cursor = roomCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
     app.get("/availableRooms", async (req, res) => {
       const query = { availability: true };
       const cursor = roomCollection.find(query);
