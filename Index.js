@@ -123,35 +123,6 @@ async function run() {
       res.send(result);
     });
 
-    app.post("/roomReview", verifyToken, async (req, res) => {
-      const { roomId, review, rating } = req.body;
-      const userId = req.user._id;
-
-      // Check if the user has booked the room
-      const room = await roomCollection.findOne({
-        _id: new ObjectId(roomId),
-        bookedBy: userId,
-      });
-
-      if (!room) {
-        return res
-          .status(403)
-          .send({ message: "You can only review rooms you have booked." });
-      }
-
-      // Add review to the room
-      const result = await roomCollection.updateOne(
-        { _id: new ObjectId(roomId) },
-        { $push: { reviews: { userId, review, rating, date: new Date() } } }
-      );
-
-      if (result.modifiedCount > 0) {
-        res.send({ success: true, message: "Review submitted successfully." });
-      } else {
-        res.status(500).send({ message: "Failed to submit review." });
-      }
-    });
-
     app.post("/logOut", logger, async (req, res) => {
       const user = req.body;
       console.log("logging out", user);
@@ -168,6 +139,18 @@ async function run() {
         },
       };
       const result = await bookingCollection.updateOne(query, update);
+      res.send(result);
+    });
+
+    app.patch("/submitReview", async (req, res) => {
+      const { id, rating, comment, submitTime } = req.body;
+      const query = { _id: new ObjectId(id) };
+      const updateReview = {
+        $push: {
+          reviews: { rating: rating, comment: comment, submitTime: submitTime },
+        },
+      };
+      const result = await roomCollection.updateOne(query, updateReview);
       res.send(result);
     });
 
