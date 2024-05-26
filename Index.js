@@ -167,6 +167,7 @@ async function run() {
       const data = req.body;
       const { id, name, profile, rating, comment, submitTime } = data;
       const query = { _id: new ObjectId(id) };
+      console.log("This is review: ", query);
       const updateReview = {
         $push: {
           reviews: {
