@@ -111,7 +111,7 @@ async function run() {
       res.send(data);
     });
 
-    app.get("/myBookings/:email", async (req, res) => {
+    app.get("/myBookings/:email", verifyToken, async (req, res) => {
       const email = req.params.email;
       const query = { userEmail: email };
       const result = await bookingCollection.find(query).toArray();
@@ -126,8 +126,19 @@ async function run() {
       console.log("this is:", result);
       res.send(result);
     });
+    app.patch("/book/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const update = {
+        $set: {
+          availability: false,
+        },
+      };
+      const result = await roomCollection.updateOne(query, update);
+      res.send(result);
+    });
 
-    app.post("/bookingCollection", async (req, res) => {
+    app.post("/bookingCollection", verifyToken, async (req, res) => {
       const data = req.body;
       console.log(data);
       const booked = await bookingCollection.findOne({ roomId: data.roomId });
@@ -138,7 +149,7 @@ async function run() {
       res.send(result);
     });
 
-    app.post("/logOut", logger, async (req, res) => {
+    app.post("/logOut", logger, verifyToken, async (req, res) => {
       const user = req.body;
       console.log("logging out", user);
       res.clearCookie("token", { maxAge: 0 }).send({ success: true });
@@ -152,7 +163,7 @@ async function run() {
 
     app.patch("/updateBooking", async (req, res) => {
       const { userEmail, roomId, start, end } = req.body;
-      const query = { userEmail: userEmail, roomId: roomId };
+      const query = { userEmail: userEmail, _id: new ObjectId(roomId) };
       const update = {
         $set: {
           start: start,
@@ -163,7 +174,7 @@ async function run() {
       res.send(result);
     });
 
-    app.patch("/submitReview", async (req, res) => {
+    app.patch("/submitReview", verifyToken, async (req, res) => {
       const data = req.body;
       const { id, name, profile, rating, comment, submitTime } = data;
       const query = { _id: new ObjectId(id) };
@@ -197,7 +208,7 @@ async function run() {
           roomsToUpdate.map((room) =>
             roomCollection.updateOne(
               { _id: room._id },
-              { $set: { available: true } }
+              { $set: { availability: true } }
             )
           )
         );
@@ -220,12 +231,22 @@ async function run() {
       res.send(result);
     });
 
+    app.patch("/deleteBook/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const update = {
+        $set: {
+          availability: true,
+        },
+      };
+      const result = await roomCollection.updateOne(query, update);
+      res.send(result);
+    });
+
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
   } finally {
-    // Ensures that the client will close when you finish/error
-    // await client.close();
   }
 }
 run().catch(console.dir);
