@@ -54,6 +54,7 @@ const client = new MongoClient(uri, {
 const database = client.db("BookNest");
 const roomCollection = database.collection("roomCollection");
 const bookingCollection = database.collection("bookingCollection");
+const reviewCollection = database.collection("reviewCollection");
 
 async function run() {
   try {
@@ -102,6 +103,14 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/review", async (req, res) => {
+      const data = await reviewCollection
+        .find()
+        .sort({ submitTime: -1 })
+        .toArray();
+      res.send(data);
+    });
+
     app.get("/myBookings/:email", async (req, res) => {
       const email = req.params.email;
       const query = { userEmail: email };
@@ -135,6 +144,12 @@ async function run() {
       res.clearCookie("token", { maxAge: 0 }).send({ success: true });
     });
 
+    app.post("/reviewCenter", async (req, res) => {
+      const data = req.body;
+      const result = await reviewCollection.insertOne(data);
+      res.send(result);
+    });
+
     app.patch("/updateBooking", async (req, res) => {
       const { userEmail, roomId, start, end } = req.body;
       const query = { userEmail: userEmail, roomId: roomId };
@@ -149,15 +164,24 @@ async function run() {
     });
 
     app.patch("/submitReview", async (req, res) => {
-      const { id, rating, comment, submitTime } = req.body;
+      const data = req.body;
+      const { id, name, profile, rating, comment, submitTime } = data;
       const query = { _id: new ObjectId(id) };
       const updateReview = {
         $push: {
-          reviews: { rating: rating, comment: comment, submitTime: submitTime },
+          reviews: {
+            name: name,
+            profile: profile,
+            rating: rating,
+            comment: comment,
+            submitTime: submitTime,
+          },
         },
       };
+      // const result1 = await reviewCollection.insertOne(data);
       const result = await roomCollection.updateOne(query, updateReview);
       res.send(result);
+      // res.send(result1);
     });
 
     app.patch("/updateRoomAvailability", async (req, res) => {
