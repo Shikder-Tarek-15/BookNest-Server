@@ -1,7 +1,7 @@
 ## Installation
 **Clone the Repository:** <br>
-  git clone https://github.com/Shikder-Tarek-15/Booknest-server.git <br>
-  cd Booknest-server
+  git clone https://github.com/Shikder-Tarek-15/BookNest-server.git <br>
+  cd BookNest-server
 
 **Install Dependencies:** <br>
   npm install
