@@ -7,9 +7,9 @@
   npm install
 
 **Set Up Environment Variables:** <br>
-Create a .env file in the root directory.
+Create a .env file in the root directory. <br>
 Add the following environment variables:
 
-DB_USER= mongodb_username
-DB_PASSWORD=mongodb_password
+DB_USER= mongodb_username <br>
+DB_PASSWORD=mongodb_password <br>
 ACCESS_TOKEN_SECRET= secret
